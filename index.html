@@ -1090,5 +1090,15 @@ function showExtra(sel,id){document.getElementById(id).classList.toggle('hidden'
   function notice(){bar.style.display='block';clearTimeout(timer);timer=setTimeout(()=>bar.style.display='none',900);}
   inputs.forEach(el=>el.addEventListener('change',notice));
 })();
+<script>
+function showExtra(select, id) {
+  const extra = document.getElementById(id);
+
+  if (select.value === "low") {
+    extra.style.display = "block";
+  } else {
+    extra.style.display = "none";
+  }
+}
 </script>
 </body></html>
