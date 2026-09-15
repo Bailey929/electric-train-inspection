@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+
+<html lang="ko"><head><meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>전동차 검수지</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR",sans-serif;background:#f5f6f8;margin:0;color:#222}
+main{max-width:1000px;margin:auto;padding:16px}.card{background:white;border:1px solid #ddd;border-radius:12px;padding:16px;margin-bottom:14px}
+h1,h2,h3{margin-top:0}.meta{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+label{font-weight:700;font-size:13px}input,select,textarea{width:100%;padding:9px;margin-top:5px;border:1px solid #ccc;border-radius:8px;box-sizing:border-box;background:white}
+table{width:100%;border-collapse:collapse;margin-top:10px}th,td{border:1px solid #ddd;padding:8px;vertical-align:top}th{background:#f0f2f4}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.box{border:1px solid #ddd;border-radius:10px;padding:10px}
+.bc{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.pos{border:1px solid #ddd;border-radius:10px;padding:10px}.items{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.small{font-size:12px;color:#666}.hidden{display:none}
+@media(max-width:700px){.meta,.grid,.bc,.items{grid-template-columns:1fr}.meta{gap:8px}table{font-size:13px}}
+</style>
+<style id="visual-refresh">
+  :root {
+    --bg: #f4f6f8;
+    --card: #ffffff;
+    --text: #20242a;
+    --muted: #6f7782;
+    --line: #dfe3e8;
+    --accent: #2f6fed;
+    --accent-soft: #edf3ff;
+    --danger-soft: #fff3f2;
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 24px 14px 56px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+      "Noto Sans KR", "Malgun Gothic", sans-serif;
+    line-height: 1.5;
+  }
+
+  .container, .wrapper, main, form {
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  h1 {
+    margin: 4px 0 24px;
+    padding: 0;
+    font-size: clamp(30px, 7vw, 46px);
+    line-height: 1.15;
+    letter-spacing: -0.05em;
+  }
+
+  h2 {
+    margin: 30px 0 14px;
+    padding-bottom: 9px;
+    border-bottom: 2px solid var(--text);
+    font-size: 22px;
+    letter-spacing: -0.03em;
+  }
+
+  h3 {
+    margin: 20px 0 10px;
+    font-size: 18px;
+  }
+
+  /* Top information area */
+  .top-info, .info, .header-info {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.04);
+  }
+
+  label {
+    display: block;
+    margin: 0 0 7px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    min-height: 50px;
+    border: 1px solid #cfd5dc;
+    border-radius: 12px;
+    background: #fff;
+    color: var(--text);
+    padding: 11px 14px;
+    font: inherit;
+    font-size: 16px;
+    outline: none;
+  }
+
+  select {
+    appearance: auto;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(47,111,237,.12);
+  }
+
+  /* Inspection cards */
+  .card, .section, .inspection-item, .car-section, .item {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin: 14px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,.035);
+  }
+
+  .car-title, .item-title {
+    font-weight: 800;
+    font-size: 19px;
+    margin-bottom: 12px;
+    letter-spacing: -0.03em;
+  }
+
+  .sub-item {
+    border-top: 1px solid #edf0f3;
+    padding-top: 14px;
+    margin-top: 14px;
+  }
+
+  .note, small, .hint {
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  /* Make choice controls easy to scan on a phone */
+  .choice-row, .options, .radio-group {
+    display: grid;
+    gap: 8px;
+    margin-top: 9px;
+  }
+
+  .choice-row label, .options label, .radio-group label {
+    margin: 0;
+    padding: 11px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fafbfc;
+    font-weight: 500;
+  }
+
+  /* Existing native selects get consistent spacing */
+  .card select, .section select, .inspection-item select,
+  .car-section select, .item select {
+    margin: 5px 0 10px;
+  }
+
+  .supplement {
+    margin-top: 12px;
+    padding: 13px;
+    border-left: 4px solid var(--accent);
+    border-radius: 10px;
+    background: var(--accent-soft);
+  }
+
+  .supplement > * {
+    margin-bottom: 8px;
+  }
+
+  .supplement > *:last-child {
+    margin-bottom: 0;
+  }
+
+  /* BC insulation section */
+  .position {
+    background: #fafbfc;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 13px;
+    margin-top: 10px;
+  }
+
+  .position-title {
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .remarks {
+    margin-top: 8px;
+  }
+
+  button {
+    min-height: 48px;
+    border: 0;
+    border-radius: 12px;
+    padding: 11px 18px;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  @media (max-width: 520px) {
+    body { padding: 14px 10px 40px; }
+    .top-info, .info, .header-info,
+    .card, .section, .inspection-item, .car-section, .item {
+      padding: 14px;
+      border-radius: 14px;
+    }
+    h1 { margin-bottom: 18px; }
+    h2 { font-size: 20px; margin-top: 24px; }
+  }
+</style>
+<style id="color-refresh">
+  :root {
+    --bg: #eef3f8;
+    --card: #ffffff;
+    --text: #1f2937;
+    --muted: #64748b;
+    --line: #d8e0e8;
+    --accent: #2563eb;
+    --accent-dark: #1d4ed8;
+    --accent-soft: #eaf2ff;
+    --teal-soft: #e8f7f5;
+    --teal: #0f766e;
+  }
+
+  body {
+    background:
+      linear-gradient(180deg, #e8f1fb 0px, #f4f7fa 210px, var(--bg) 100%);
+    color: var(--text);
+  }
+
+  h1 {
+    color: #17365d;
+    letter-spacing: -0.055em;
+  }
+
+  h2 {
+    color: #17365d;
+    border-bottom-color: #7ea6d8;
+  }
+
+  h3 {
+    color: #244b73;
+  }
+
+  .top-info, .info, .header-info {
+    border-color: #cbd9e8;
+    background: rgba(255,255,255,.96);
+    box-shadow: 0 5px 18px rgba(35,72,110,.08);
+  }
+
+  .card, .section, .inspection-item, .car-section, .item {
+    border-color: #d5e0eb;
+    box-shadow: 0 4px 16px rgba(35,72,110,.06);
+  }
+
+  .car-title, .item-title {
+    color: #214d7a;
+  }
+
+  input, select, textarea {
+    border-color: #c5d2df;
+    background: #fcfdff;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(37,99,235,.13);
+    background: #fff;
+  }
+
+  .choice-row label, .options label, .radio-group label {
+    border-color: #d6e1ec;
+    background: #f7faff;
+  }
+
+  .choice-row label:hover, .options label:hover, .radio-group label:hover {
+    background: var(--accent-soft);
+    border-color: #9dbbe4;
+  }
+
+  .sub-item {
+    border-top-color: #e5ebf1;
+  }
+
+  .supplement {
+    border-left-color: var(--teal);
+    background: var(--teal-soft);
+  }
+
+  .supplement select,
+  .supplement input {
+    border-color: #b9d9d5;
+  }
+
+  .position {
+    border-color: #d6e1ec;
+    background: #f8fbfd;
+  }
+
+  .position-title {
+    color: #245b70;
+  }
+
+  button {
+    background: var(--accent);
+    color: white;
+  }
+
+  button:hover {
+    background: var(--accent-dark);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    /* Keep the form readable and consistent rather than automatically
+       switching to a dark form on iOS. */
+  }
+</style>
+<style id="landscape-refresh">
+  @media (min-width: 900px) {
+    body { padding: 22px 28px 48px; }
+    main { max-width: 1380px; }
+
+    .card {
+      padding: 22px;
+      border-radius: 18px;
+    }
+
+    /* Header */
+    main > .card:first-child h1 {
+      margin-bottom: 18px;
+    }
+
+    .top-info {
+      display: grid;
+      grid-template-columns: 90px minmax(180px, 1fr);
+      gap: 14px;
+      align-items: center;
+    }
+
+    .top-info label {
+      margin: 0;
+    }
+
+    .top-info select {
+      margin: 0;
+    }
+
+    .meta {
+      grid-template-columns: 240px;
+    }
+
+    /* ① Oil: 3 cars side by side */
+    .oil-section {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      align-items: start;
+    }
+
+    .oil-section > h2,
+    .oil-section > p.small {
+      grid-column: 1 / -1;
+    }
+
+    .oil-section .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .oil-section .box {
+      padding: 10px;
+    }
+
+    /* ② BC: 6 cars in 3 columns */
+    .bc-section {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      align-items: start;
+    }
+
+    .bc-section > h2,
+    .bc-section > p.small {
+      grid-column: 1 / -1;
+    }
+
+    .bc-section .bc {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .bc-section .items {
+      grid-template-columns: 1fr;
+      gap: 7px;
+    }
+
+    .train-unit {
+      background: #f8fbff;
+      border: 1px solid #d4e1ee;
+      border-radius: 14px;
+      padding: 12px;
+      margin: 0;
+      min-width: 0;
+    }
+
+    .train-unit h3 {
+      margin: 0 0 9px;
+      padding-bottom: 7px;
+      border-bottom: 2px solid #c9dbee;
+      font-size: 17px;
+    }
+
+    .bc-section > .remarks {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media print {
+    @page {
+      size: A4 landscape;
+      margin: 10mm;
+    }
+
+    body {
+      background: white !important;
+      padding: 0;
+    }
+
+    main {
+      max-width: none !important;
+    }
+
+    .card {
+      box-shadow: none !important;
+      break-inside: avoid;
+    }
+  }
+
+  @media (max-width: 899px) {
+    .train-unit { margin-bottom: 14px; }
+  }
+</style>
+<style id="fold8-refresh">
+  /* Galaxy Z Fold8 펼친 가로 화면 최적화 */
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    overscroll-behavior-x: none;
+  }
+
+  input, select, textarea, button {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  select, input {
+    min-height: 48px;
+  }
+
+  /* Fold를 펼쳐 가로로 사용하는 경우: 화면을 꽉 채우되
+     너무 넓어져서 읽기 어려워지지 않도록 여백을 자동 조절 */
+  @media (min-width: 700px) and (orientation: landscape) {
+    body {
+      padding: 12px 16px 34px;
+    }
+
+    main {
+      width: 100%;
+      max-width: 1480px;
+    }
+
+    h1 {
+      font-size: 30px;
+      margin: 0 0 14px;
+    }
+
+    h2 {
+      font-size: 19px;
+      margin: 20px 0 10px;
+      padding-bottom: 6px;
+    }
+
+    h3 {
+      font-size: 16px;
+    }
+
+    .card {
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 14px;
+    }
+
+    .top-info {
+      padding: 13px 15px;
+      grid-template-columns: 74px minmax(180px, 330px);
+      gap: 10px;
+    }
+
+    .oil-section,
+    .bc-section {
+      gap: 10px;
+    }
+
+    .train-unit {
+      padding: 10px;
+      border-radius: 12px;
+    }
+
+    .oil-section .grid {
+      gap: 6px;
+    }
+
+    .oil-section .box {
+      padding: 8px;
+    }
+
+    .bc-section .bc {
+      gap: 6px;
+    }
+
+    .bc-section .pos {
+      padding: 8px;
+    }
+
+    .bc-section .items {
+      gap: 5px;
+    }
+
+    .bc-section select {
+      min-height: 42px;
+      padding: 7px 9px;
+      font-size: 14px;
+    }
+
+    input, select, textarea {
+      min-height: 44px;
+      padding: 8px 10px;
+      font-size: 14px;
+      border-radius: 9px;
+    }
+
+    label {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .small, .note, small, .hint {
+      font-size: 12px;
+    }
+
+    .remarks {
+      margin-top: 7px;
+    }
+  }
+
+  /* Fold를 접었을 때는 한 열로, 손가락으로 누르기 쉽게 */
+  @media (max-width: 699px) {
+    body {
+      padding: 12px 9px 34px;
+    }
+
+    main {
+      width: 100%;
+    }
+
+    input, select, textarea {
+      min-height: 50px;
+    }
+  }
+
+  /* 브라우저의 자동 확대/줌을 최소화하고 실제 입력이 편하도록 */
+  @media (pointer: coarse) {
+    select {
+      font-size: 16px;
+    }
+
+    input {
+      font-size: 16px;
+    }
+  }
+</style>
+
+</head><body><main>
+<div class="card"><h1>전동차 검수지</h1>
+<div class="top-info">
+<label for="formation">편성</label>
+<select class="formation-select" id="formation" name="formation">
+<option value="D01">D01</option>
+<option value="D02">D02</option>
+<option value="D03">D03</option>
+<option value="D04">D04</option>
+<option value="D05">D05</option>
+<option value="D06">D06</option>
+<option value="D07">D07</option>
+<option value="D08">D08</option>
+<option value="D09">D09</option>
+<option value="D10">D10</option>
+<option value="D11">D11</option>
+<option value="D12">D12</option>
+<option value="D13">D13</option>
+<option value="D14">D14</option>
+<option value="D15">D15</option>
+<option value="D16">D16</option>
+<option value="D17">D17</option>
+<option value="D18">D18</option>
+<option value="D19">D19</option>
+<option value="D20">D20</option>
+<option value="D21">D21</option>
+<option value="D22">D22</option>
+<option value="D23">D23</option>
+</select>
+</div>
+<div class="meta">
+<label>검수일<input type="date"/></label></div></div>
+<div class="card oil-section"><h2>① 드라이빙 기어 오일 양</h2><p class="small">검수 대상: M차 2·3·7호차 / 각 호차 1~4축</p>
+<div class="train-unit"><h3>7호차</h3><div class="grid"><div class="box"><b>1축</b>
+<select name="oil-7-1" onchange="showExtra(this,'extra-7-1')">
+<option value="">선택</option><option>과다</option><option>양호 / 정상</option>
+<option>하한선</option><option value="low">하한선 이하 (보충 필요)</option></select>
+<div id="extra-7-1" style="margin-top:10px;padding-top:10px;border-top:1px dashed #ccc">
+<div class="small">※ 「하한선 이하 (보충 필요)」인 경우 작성</div>
+<label>누유 여부<select><option value="">선택</option><option>있음</option><option>없음</option></select></label>
+<label>보충량 (mL)<select name="replenish-ml-1">
+<option value="">선택</option>
+<option value="200">200 mL</option>
+<option value="300">300 mL</option>
+<option value="400">400 mL</option>
+<option value="500">500 mL</option>
+<option value="600">600 mL</option>
+</select></label>
+<label>보충 위치 — 호차<select class="replenish-car">
+<option value="">호차 선택</option>
+<option value="0호차">0호차</option>
+<option value="7호차">7호차</option>
+<option value="4호차">4호차</option>
+<option value="3호차">3호차</option>
+<option value="2호차">2호차</option>
+<option value="1호차">1호차</option>
+</select></label>
+<label>보충 위치 — 축수<select class="replenish-axle">
+<option value="">축수 선택</option>
+<option value="1축">1축</option>
+<option value="2축">2축</option>
+<option value="3축">3축</option>
+<option value="4축">4축</option>
+</select></label>
+</div></div><div class="box"><b>2축</b>
+<select name="oil-7-2" onchange="showExtra(this,'extra-7-2')">
+<option value="">선택</option><option>과다</option><option>양호 / 정상</option>
+<option>하한선</option><option value="low">하한선 이하 (보충 필요)</option></select>
+<div id="extra-7-2" style="margin-top:10px;padding-top:10px;border-top:1px dashed #ccc">
+<div class="small">※ 「하한선 이하 (보충 필요)」인 경우 작성</div>
+<label>누유 여부<select><option value="">선택</option><option>있음</option><option>없음</option></select></label>
+<label>보충량 (mL)<select name="replenish-ml-2">
+<option value="">선택</option>
+<option value="200">200 mL</option>
+<option value="300">300 mL</option>
+<option value="400">400 mL</option>
+<option value="500">500 mL</option>
+<option value="600">600 mL</option>
+</select></label>
+<label>보충 위치 — 호차<select class="replenish-car">
+<option value="">호차 선택</option>
+<option value="0호차">0호차</option>
+<option value="7호차">7호차</option>
+<option value="4호차">4호차</option>
+<option value="3호차">3호차</option>
+<option value="2호차">2호차</option>
+<option value="1호차">1호차</option>
+</select></label>
+<label>보충 위치 — 축수<select class="replenish-axle">
+<option value="">축수 선택</option>
+<option value="1축">1축</option>
+<option value="2축">2축</option>
+<option value="3축">3축</option>
+<option value="4축">4축</option>
+</select></label>
+</div></div><div class="box"><b>3축</b>
+<select name="oil-7-3" onchange="showExtra(this,'extra-7-3')">
+<option value="">선택</option><option>과다</option><option>양호 / 정상</option>
+<option>하한선</option><option value="low">하한선 이하 (보충 필요)</option></select>
+<div id="extra-7-3" style="margin-top:10px;padding-top:10px;border-top:1px dashed #ccc">
+<div class="small">※ 「하한선 이하 (보충 필요)」인 경우 작성</div>
+<label>누유 여부<select><option value="">선택</option><option>있음</option><option>없음</option></select></label>
+<label>보충량 (mL)<select name="replenish-ml-3">
+<option value="">선택</option>
+<option value="200">200 mL</option>
+<option value="300">300 mL</option>
+<option value="400">400 mL</option>
+<option value="500">500 mL</option>
+<option value="600">600 mL</option>
+</select></label>
+<label>보충 위치 — 호차<select class="replenish-car">
+<option value="">호차 선택</option>
+<option value="0호차">0호차</option>
+<option value="7호차">7호차</option>
+<option value="4호차">4호차</option>
+<option value="3호차">3호차</option>
+<option value="2호차">2호차</option>
+<option value="1호차">1호차</option>
+</select></label>
+<label>보충 위치 — 축수<select class="replenish-axle">
+<option value="">축수 선택</option>
+<option value="1축">1축</option>
+<option value="2축">2축</option>
+<option value="3축">3축</option>
+<option value="4축">4축</option>
+</select></label>
+</div></div><div class="box"><b>4축</b>
+<select name="oil-7-4" onchange="showExtra(this,'extra-7-4')">
+<option value="">선택</option><option>과다</option><option>양호 / 정상</option>
+<option>하한선</option><option value="low">하한선 이하 (보충 필요)</option></select>
+<div id="extra-7-4" style="margin-top:10px;padding-top:10px;border-top:1px dashed #ccc">
+<div class="small">※ 「하한선 이하 (보충 필요)」인 경우 작성</div>
+<label>누유 여부<select><option value="">선택</option><option>있음</option><option>없음</option></select></label>
+<label>보충량 (mL)<select name="replenish-ml-4">
+<option value="">선택</option>
+<option value="200">200 mL</option>
+<option value="300">300 mL</option>
+<option value="400">400 mL</option>
+<option value="500">500 mL</option>
+<option value="600">600 mL</option>
+</select></label>
+<label>보충 위치 — 호차<select class="replenish-car">
+<option value="">호차 선택</option>
+<option value="0호차">0호차</option>
+<option value="7호차">7호차</option>
+<option value="4호차">4호차</option>
+<option value="3호차">3호차</option>
+<option value="2호차">2호차</option>
+<option value="1호차">1호차</option>
+</select></label>
+<label>보충 위치 — 축수<select class="replenish-axle">
+<option value="">축수 선택</option>
+<option value="1축">1축</option>
+<option value="2축">2축</option>
+<option value="3축">3축</option>
+<option value="4축">4축</option>
+</select></label>
+</div></div></div></div><div class="train-unit"><h3>3호차</h3><div class="grid"><div class="box"><b>1축</b>
+<select name="oil-3-1" onchange="showExtra(this,'extra-3-1')">
+<option value="">선택</option><option>과다</option><option>양호 / 정상</option>
+<option>하한선</option><option value="low">하한선 이하 (보충 필요)</option></select>
+<div id="extra-3-1" style="margin-top:10px;padding-top:10px;border-top:1px dashed #ccc">
+<div class="small">※ 「하한선 이하 (보충 필요)」인 경우 작성</div>
+<label>누유 여부<select><option value="">선택</option><option>있음</option><option>없음</option></select></label>
+<label>보충량 (mL)<select name="replenish-ml-5">
+<option value="">선택</option>
+<option value="200">200 mL</option>
+<option value="300">300 mL</option>
+<option value="400">400 mL</option>
+<option value="500">500 mL</option>
+<option value="600">600 mL</option>
+</select></label>
+<label>보충 위치 — 호차<select class="replenish-car">
+<option value="">호차 선택</option>
+<option value="0호차">0호차</option>
+<option value="7호차">7호차</option>
+<option value="4호차">4호차</option>
+<option value="3호차">3호차</option>
+<option value="2호차">2호차</option>
+<option value="1호차">1호차</option>
+</select></label>
+<label>보충 위치 — 축수<select class="replenish-axle">
+<option value="">축수 선택</option>
+<option value="1축">1축</option>
+<option value="2축">2축</option>
+<option value="3축">3축</option>
+<option value="4축">4축</option>
+</select></label>
+</div></div><div class="box"><b>2축</b>
+<select name="oil-3-2" onchange="showExtra(this,'extra-3-2')">
+<option value="">선택</option><option>과다</option><option>양호 / 정상</option>
+<option>하한선</option><option value="low">하한선 이하 (보충 필요)</option></select>
+<div id="extra-3-2" style="margin-top:10px;padding-top:10px;border-top:1px dashed #ccc">
+<div class="small">※ 「하한선 이하 (보충 필요)」인 경우 작성</div>
+<label>누유 여부<select><option value="">선택</option><option>있음</option><option>없음</option></select></label>
+<label>보충량 (mL)<select name="replenish-ml-6">
+<option value="">선택</option>
+<option value="200">200 mL</option>
+<option value="300">300 mL</option>
+<option value="400">400 mL</option>
+<option value="500">500 mL</option>
+<option value="600">600 mL</option>
+</select></label>
+<label>보충 위치 — 호차<select class="replenish-car">
+<option value="">호차 선택</option>
+<option value="0호차">0호차</option>
+<option value="7호차">7호차</option>
+<option value="4호차">4호차</option>
+<option value="3호차">3호차</option>
+<option value="2호차">2호차</option>
+<option value="1호차">1호차</option>
+</select></label>
+<label>보충 위치 — 축수<select class="replenish-axle">
+<option value="">축수 선택</option>
+<option value="1축">1축</option>
+<option value="2축">2축</option>
+<option value="3축">3축</option>
+<option value="4축">4축</option>
+</select></label>
+</div></div><div class="box"><b>3축</b>
+<select name="oil-3-3" onchange="showExtra(this,'extra-3-3')">
+<option value="">선택</option><option>과다</option><option>양호 / 정상</option>
+<option>하한선</option><option value="low">하한선 이하 (보충 필요)</option></select>
+<div id="extra-3-3" style="margin-top:10px;padding-top:10px;border-top:1px dashed #ccc">
+<div class="small">※ 「하한선 이하 (보충 필요)」인 경우 작성</div>
+<label>누유 여부<select><option value="">선택</option><option>있음</option><option>없음</option></select></label>
+<label>보충량 (mL)<select name="replenish-ml-7">
+<option value="">선택</option>
+<option value="200">200 mL</option>
+<option value="300">300 mL</option>
+<option value="400">400 mL</option>
+<option value="500">500 mL</option>
+<option value="600">600 mL</option>
+</select></label>
+<label>보충 위치 — 호차<select class="replenish-car">
+<option value="">호차 선택</option>
+<option value="0호차">0호차</option>
+<option value="7호차">7호차</option>
+<option value="4호차">4호차</option>
+<option value="3호차">3호차</option>
+<option value="2호차">2호차</option>
+<option value="1호차">1호차</option>
+</select></label>
+<label>보충 위치 — 축수<select class="replenish-axle">
+<option value="">축수 선택</option>
+<option value="1축">1축</option>
+<option value="2축">2축</option>
+<option value="3축">3축</option>
+<option value="4축">4축</option>
+</select></label>
+</div></div><div class="box"><b>4축</b>
+<select name="oil-3-4" onchange="showExtra(this,'extra-3-4')">
+<option value="">선택</option><option>과다</option><option>양호 / 정상</option>
+<option>하한선</option><option value="low">하한선 이하 (보충 필요)</option></select>
+<div id="extra-3-4" style="margin-top:10px;padding-top:10px;border-top:1px dashed #ccc">
+<div class="small">※ 「하한선 이하 (보충 필요)」인 경우 작성</div>
+<label>누유 여부<select><option value="">선택</option><option>있음</option><option>없음</option></select></label>
+<label>보충량 (mL)<select name="replenish-ml-8">
+<option value="">선택</option>
+<option value="200">200 mL</option>
+<option value="300">300 mL</option>
+<option value="400">400 mL</option>
+<option value="500">500 mL</option>
+<option value="600">600 mL</option>
+</select></label>
+<label>보충 위치 — 호차<select class="replenish-car">
+<option value="">호차 선택</option>
+<option value="0호차">0호차</option>
+<option value="7호차">7호차</option>
+<option value="4호차">4호차</option>
+<option value="3호차">3호차</option>
+<option value="2호차">2호차</option>
+<option value="1호차">1호차</option>
+</select></label>
+<label>보충 위치 — 축수<select class="replenish-axle">
+<option value="">축수 선택</option>
+<option value="1축">1축</option>
+<option value="2축">2축</option>
+<option value="3축">3축</option>
+<option value="4축">4축</option>
+</select></label>
+</div></div></div></div><div class="train-unit"><h3>2호차</h3><div class="grid"><div class="box"><b>1축</b>
+<select name="oil-2-1" onchange="showExtra(this,'extra-2-1')">
+<option value="">선택</option><option>과다</option><option>양호 / 정상</option>
+<option>하한선</option><option value="low">하한선 이하 (보충 필요)</option></select>
+<div id="extra-2-1" style="margin-top:10px;padding-top:10px;border-top:1px dashed #ccc">
+<div class="small">※ 「하한선 이하 (보충 필요)」인 경우 작성</div>
+<label>누유 여부<select><option value="">선택</option><option>있음</option><option>없음</option></select></label>
+<label>보충량 (mL)<select name="replenish-ml-9">
+<option value="">선택</option>
+<option value="200">200 mL</option>
+<option value="300">300 mL</option>
+<option value="400">400 mL</option>
+<option value="500">500 mL</option>
+<option value="600">600 mL</option>
+</select></label>
+<label>보충 위치 — 호차<select class="replenish-car">
+<option value="">호차 선택</option>
+<option value="0호차">0호차</option>
+<option value="7호차">7호차</option>
+<option value="4호차">4호차</option>
+<option value="3호차">3호차</option>
+<option value="2호차">2호차</option>
+<option value="1호차">1호차</option>
+</select></label>
+<label>보충 위치 — 축수<select class="replenish-axle">
+<option value="">축수 선택</option>
+<option value="1축">1축</option>
+<option value="2축">2축</option>
+<option value="3축">3축</option>
+<option value="4축">4축</option>
+</select></label>
+</div></div><div class="box"><b>2축</b>
+<select name="oil-2-2" onchange="showExtra(this,'extra-2-2')">
+<option value="">선택</option><option>과다</option><option>양호 / 정상</option>
+<option>하한선</option><option value="low">하한선 이하 (보충 필요)</option></select>
+<div id="extra-2-2" style="margin-top:10px;padding-top:10px;border-top:1px dashed #ccc">
+<div class="small">※ 「하한선 이하 (보충 필요)」인 경우 작성</div>
+<label>누유 여부<select><option value="">선택</option><option>있음</option><option>없음</option></select></label>
+<label>보충량 (mL)<select name="replenish-ml-10">
+<option value="">선택</option>
+<option value="200">200 mL</option>
+<option value="300">300 mL</option>
+<option value="400">400 mL</option>
+<option value="500">500 mL</option>
+<option value="600">600 mL</option>
+</select></label>
+<label>보충 위치 — 호차<select class="replenish-car">
+<option value="">호차 선택</option>
+<option value="0호차">0호차</option>
+<option value="7호차">7호차</option>
+<option value="4호차">4호차</option>
+<option value="3호차">3호차</option>
+<option value="2호차">2호차</option>
+<option value="1호차">1호차</option>
+</select></label>
+<label>보충 위치 — 축수<select class="replenish-axle">
+<option value="">축수 선택</option>
+<option value="1축">1축</option>
+<option value="2축">2축</option>
+<option value="3축">3축</option>
+<option value="4축">4축</option>
+</select></label>
+</div></div><div class="box"><b>3축</b>
+<select name="oil-2-3" onchange="showExtra(this,'extra-2-3')">
+<option value="">선택</option><option>과다</option><option>양호 / 정상</option>
+<option>하한선</option><option value="low">하한선 이하 (보충 필요)</option></select>
+<div id="extra-2-3" style="margin-top:10px;padding-top:10px;border-top:1px dashed #ccc">
+<div class="small">※ 「하한선 이하 (보충 필요)」인 경우 작성</div>
+<label>누유 여부<select><option value="">선택</option><option>있음</option><option>없음</option></select></label>
+<label>보충량 (mL)<select name="replenish-ml-11">
+<option value="">선택</option>
+<option value="200">200 mL</option>
+<option value="300">300 mL</option>
+<option value="400">400 mL</option>
+<option value="500">500 mL</option>
+<option value="600">600 mL</option>
+</select></label>
+<label>보충 위치 — 호차<select class="replenish-car">
+<option value="">호차 선택</option>
+<option value="0호차">0호차</option>
+<option value="7호차">7호차</option>
+<option value="4호차">4호차</option>
+<option value="3호차">3호차</option>
+<option value="2호차">2호차</option>
+<option value="1호차">1호차</option>
+</select></label>
+<label>보충 위치 — 축수<select class="replenish-axle">
+<option value="">축수 선택</option>
+<option value="1축">1축</option>
+<option value="2축">2축</option>
+<option value="3축">3축</option>
+<option value="4축">4축</option>
+</select></label>
+</div></div><div class="box"><b>4축</b>
+<select name="oil-2-4" onchange="showExtra(this,'extra-2-4')">
+<option value="">선택</option><option>과다</option><option>양호 / 정상</option>
+<option>하한선</option><option value="low">하한선 이하 (보충 필요)</option></select>
+<div id="extra-2-4" style="margin-top:10px;padding-top:10px;border-top:1px dashed #ccc">
+<div class="small">※ 「하한선 이하 (보충 필요)」인 경우 작성</div>
+<label>누유 여부<select><option value="">선택</option><option>있음</option><option>없음</option></select></label>
+<label>보충량 (mL)<select name="replenish-ml-12">
+<option value="">선택</option>
+<option value="200">200 mL</option>
+<option value="300">300 mL</option>
+<option value="400">400 mL</option>
+<option value="500">500 mL</option>
+<option value="600">600 mL</option>
+</select></label>
+<label>보충 위치 — 호차<select class="replenish-car">
+<option value="">호차 선택</option>
+<option value="0호차">0호차</option>
+<option value="7호차">7호차</option>
+<option value="4호차">4호차</option>
+<option value="3호차">3호차</option>
+<option value="2호차">2호차</option>
+<option value="1호차">1호차</option>
+</select></label>
+<label>보충 위치 — 축수<select class="replenish-axle">
+<option value="">축수 선택</option>
+<option value="1축">1축</option>
+<option value="2축">2축</option>
+<option value="3축">3축</option>
+<option value="4축">4축</option>
+</select></label>
+</div></div></div></div></div>
+<div class="card bc-section"><h2>② BC 애자 상태</h2>
+<p class="small">2·3·4·7호차: 전위·후위 × L/R　|　0·1호차: 전위·후위 × PB/L/R</p><div class="train-unit"><h3>0호차</h3><div class="bc"><div class="pos"><b>전위</b><div class="items"><div><b>PB</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div><div><b>L</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div><div><b>R</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div></div></div><div class="pos"><b>후위</b><div class="items"><div><b>PB</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div><div><b>L</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div><div><b>R</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div></div></div><div class="remarks"><label>비고<input placeholder="비고"/></label></div></div></div><div class="train-unit"><h3>7호차</h3><div class="bc"><div class="pos"><b>전위</b><div class="items"><div><b>L</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div><div><b>R</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div></div></div><div class="pos"><b>후위</b><div class="items"><div><b>L</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div><div><b>R</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div></div></div><div class="remarks"><label>비고<input placeholder="비고"/></label></div></div></div><div class="train-unit"><h3>4호차</h3><div class="bc"><div class="pos"><b>전위</b><div class="items"><div><b>L</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div><div><b>R</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div></div></div><div class="pos"><b>후위</b><div class="items"><div><b>L</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div><div><b>R</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div></div></div><div class="remarks"><label>비고<input placeholder="비고"/></label></div></div></div><div class="train-unit"><h3>3호차</h3><div class="bc"><div class="pos"><b>전위</b><div class="items"><div><b>L</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div><div><b>R</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div></div></div><div class="pos"><b>후위</b><div class="items"><div><b>L</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div><div><b>R</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div></div></div><div class="remarks"><label>비고<input placeholder="비고"/></label></div></div></div><div class="train-unit"><h3>2호차</h3><div class="bc"><div class="pos"><b>전위</b><div class="items"><div><b>L</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div><div><b>R</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div></div></div><div class="pos"><b>후위</b><div class="items"><div><b>L</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div><div><b>R</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div></div></div><div class="remarks"><label>비고<input placeholder="비고"/></label></div></div></div><div class="train-unit"><h3>1호차</h3><div class="bc"><div class="pos"><b>전위</b><div class="items"><div><b>PB</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div><div><b>L</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div><div><b>R</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div></div></div><div class="pos"><b>후위</b><div class="items"><div><b>PB</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div><div><b>L</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div><div><b>R</b>
+<select><option value="">평가사항 선택</option>
+<option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div></div></div></div></div><div class="remarks"><label>비고<input placeholder="비고"/></label></div></div>
+<div class="card"><h2>전체 비고</h2><textarea placeholder="전체 비고" rows="4"></textarea></div>
+</main>
+<script>
+function showExtra(sel,id){document.getElementById(id).classList.toggle('hidden',sel.value!=='low')}
+</script>
+<script id="autosave">
+(function(){
+  const KEY_PREFIX='electric-train-inspection-v1:';
+  const form=document.querySelector('main') || document.body;
+  const inputs=Array.from(form.querySelectorAll('input, select, textarea'));
+  const consist=document.querySelector('select');
+  function key(){ return KEY_PREFIX + (consist && consist.value ? consist.value : 'UNSET'); }
+  function save(){
+    try{
+      const data=inputs.map((el,i)=>({i,value:el.value}));
+      localStorage.setItem(key(), JSON.stringify(data));
+    }catch(e){}
+  }
+  function load(){
+    try{
+      const raw=localStorage.getItem(key());
+      if(!raw) return;
+      const data=JSON.parse(raw);
+      data.forEach(x=>{ if(inputs[x.i]) inputs[x.i].value=x.value; });
+    }catch(e){}
+  }
+  inputs.forEach(el=>el.addEventListener('input',save));
+  inputs.forEach(el=>el.addEventListener('change',save));
+  if(consist){
+    consist.addEventListener('change',function(){ load(); save(); });
+  }
+  load();
+  window.addEventListener('beforeunload',save);
+
+  const bar=document.createElement('div');
+  bar.style.cssText='position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:9999;background:rgba(32,36,42,.92);color:#fff;padding:8px 12px;border-radius:999px;font-size:12px;box-shadow:0 4px 16px rgba(0,0,0,.18);display:none;';
+  bar.textContent='자동 저장됨';
+  document.body.appendChild(bar);
+  let timer;
+  function notice(){bar.style.display='block';clearTimeout(timer);timer=setTimeout(()=>bar.style.display='none',900);}
+  inputs.forEach(el=>el.addEventListener('change',notice));
+})();
+</script>
+</body></html>
