@@ -1101,7 +1101,9 @@ function showExtra(select, id) {
   }
 }
 
-document.getElementById("inspectionDate").value =
-  new Date().toISOString().split("T")[0];
+window.addEventListener("DOMContentLoaded", function() {
+  document.getElementById("inspectionDate").value =
+    new Date().toISOString().split("T")[0];
+});
 </script>
 </body></html>
