@@ -1100,5 +1100,12 @@ function showExtra(select, id) {
     extra.style.display = "none";
   }
 }
+
+window.addEventListener("DOMContentLoaded", function() {
+  document.querySelectorAll('select[onchange^="showExtra"]').forEach(function(select) {
+    const id = select.getAttribute("onchange").match(/'([^']+)'/)[1];
+    showExtra(select, id);
+  });
+});
 </script>
 </body></html>
