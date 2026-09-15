@@ -1101,11 +1101,7 @@ function showExtra(select, id) {
   }
 }
 
-window.addEventListener("DOMContentLoaded", function() {
-  document.querySelectorAll('select[onchange^="showExtra"]').forEach(function(select) {
-    const id = select.getAttribute("onchange").match(/'([^']+)'/)[1];
-    showExtra(select, id);
-  });
-});
+document.getElementById("inspectionDate").value =
+  new Date().toISOString().split("T")[0];
 </script>
 </body></html>
