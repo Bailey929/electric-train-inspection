@@ -1071,6 +1071,11 @@ table{width:100%;border-collapse:collapse;margin-top:10px}th,td{border:1px solid
 <select><option value="">평가사항 선택</option>
 <option>파손 / 누기</option><option>균열 / 누기 X</option><option>정상 / 양호</option></select></div></div></div></div></div><div class="remarks"><label>비고<input placeholder="비고"/></label></div></div>
 <div class="card"><h2>전체 비고</h2><textarea placeholder="전체 비고" rows="4"></textarea></div>
+<div style="margin-top:20px;">
+  <button type="button" id="saveInspectionButton">
+    검수 저장
+  </button>
+</div>
 </main>
 <script>
 function showExtra(sel,id){document.getElementById(id).classList.toggle('hidden',sel.value!=='low')}
