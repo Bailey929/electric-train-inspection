@@ -1078,7 +1078,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px}th,td{border:1px solid
 </div>
 
 <div id="releaseTools" style="margin:12px 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-  <small>화면 버전: 2026.09.16-02</small>
+  <small>화면 버전: 2026.09.16-03</small>
   <button type="button" id="reloadLatestButton">최신 버전 불러오기</button>
   <span id="reloadLatestStatus" role="status" aria-live="polite"></span>
 </div>
@@ -1209,6 +1209,48 @@ function collectOilRows() {
   return rows;
 }
 
+
+function collectBcRows() {
+  const section = document.querySelector('.bc-section');
+  if (!section) throw new Error('BC 검사 영역을 찾을 수 없습니다.');
+  const rows = [];
+  const missing = [];
+  const seen = new Set();
+  let firstMissing;
+  const units = Array.from(section.querySelectorAll('.train-unit'));
+  for (const car of [0, 7, 4, 3, 2, 1]) {
+    const matches = units.filter(unit => unit.querySelector('h3')?.textContent.trim() === car + '호차');
+    if (matches.length !== 1) throw new Error(car + '호차 BC 입력란을 확인할 수 없습니다.');
+    const unit = matches[0];
+    // Only a note inside this train unit belongs to that car.
+    const note = unit.querySelector('.remarks input')?.value.trim() || null;
+    for (const [label, position] of [['전위', 'front'], ['후위', 'rear']]) {
+      const positions = Array.from(unit.querySelectorAll('.pos')).filter(pos => pos.querySelector(':scope > b')?.textContent.trim() === label);
+      if (positions.length !== 1) throw new Error(car + '호차 ' + label + ' BC 입력란을 확인할 수 없습니다.');
+      const items = Array.from(positions[0].querySelectorAll('.items > div'));
+      for (const side of (car === 0 || car === 1 ? ['PB', 'L', 'R'] : ['L', 'R'])) {
+        const matches = items.filter(item => item.querySelector(':scope > b')?.textContent.trim() === side);
+        const select = matches.length === 1 && matches[0].querySelector('select');
+        const key = car + '호차 ' + label + ' ' + side;
+        if (!select || seen.has(select)) throw new Error(key + ' BC 입력란을 확인할 수 없습니다.');
+        seen.add(select);
+        const status = select.value.trim();
+        if (!status || !Array.from(select.options).some(option => option.value === status && !option.disabled)) {
+          missing.push(key);
+          firstMissing ||= select;
+        }
+        rows.push({ car_number: car, position, side, bc_status: status, note });
+      }
+    }
+  }
+  if (section.querySelectorAll('select').length !== 28 || rows.length !== 28) throw new Error('BC 검사 항목 수가 28개와 일치하지 않습니다.');
+  if (missing.length) {
+    firstMissing.focus();
+    throw new Error('BC 평가를 선택해 주세요: ' + missing.join(', ') + '\nDB에는 저장하지 않았습니다.');
+  }
+  return rows;
+}
+
 const saveButton = document.getElementById("saveInspectionButton");
 let inspectionSaving = false;
 
@@ -1248,10 +1290,13 @@ saveButton.addEventListener("click", async (event) => {
     }
 
     const oilRows = collectOilRows();
+    const bcRows = collectBcRows();
+    const bcNote = document.querySelector('.bc-section > .remarks input')?.value.trim() || null;
+    const overallNote = document.querySelector('textarea[placeholder="전체 비고"]')?.value.trim() || null;
 
     const { data, error } = await supabaseClient
       .from("inspections")
-      .insert({ formation: formation, inspection_date: inspectionDate })
+      .insert({ formation: formation, inspection_date: inspectionDate, bc_note: bcNote, overall_note: overallNote })
       .select('id, formation, inspection_date')
       .single();
 
@@ -1259,12 +1304,18 @@ saveButton.addEventListener("click", async (event) => {
     if (!data || data.id == null) {
       throw new Error("저장 결과를 확인하지 못했습니다. 중복 저장을 피하려면 저장 내역을 확인해 주세요.");
     }
+    let detailStage = "오일 12건";
     try {
       const { error: oilError } = await supabaseClient
         .from("driving_gear_oil_inspections")
         .insert(oilRows.map(row => ({ ...row, inspection_id: data.id })));
       if (oilError) throw oilError;
-    } catch (oilError) {
+      detailStage = "BC 28건";
+      const { error: bcError } = await supabaseClient
+        .from("bc_inspections")
+        .insert(bcRows.map(row => ({ ...row, inspection_id: data.id })));
+      if (bcError) throw bcError;
+    } catch (detailError) {
       let rollbackMessage;
       try {
         const { data: deletedRows, error: rollbackError } = await supabaseClient
@@ -1276,15 +1327,15 @@ saveButton.addEventListener("click", async (event) => {
         if (!Array.isArray(deletedRows) || !deletedRows.some(row => String(row.id) === String(data.id))) {
           throw new Error("삭제된 행을 확인하지 못했습니다. 삭제 권한을 확인해 주세요.");
         }
-        rollbackMessage = "생성한 검사번호 " + data.id + "는 삭제했습니다.";
+        rollbackMessage = "생성한 검사번호 " + data.id + "와 연결된 상세 결과를 삭제했습니다.";
       } catch (rollbackError) {
         rollbackMessage = "자동 롤백을 완료하지 못했습니다. 검사번호 " + data.id +
-          "의 검수 및 오일 저장 내역을 확인한 뒤 다시 저장해 주세요.\n롤백 오류: " +
+          "의 검수·오일·BC 저장 내역을 확인한 뒤 다시 저장해 주세요.\n롤백 오류: " +
           (rollbackError?.message || "삭제 결과 확인 실패");
       }
-      throw new Error("오일 12건 저장 실패: " + (oilError?.message || "알 수 없는 오류") + "\n" + rollbackMessage);
+      throw new Error(detailStage + " 저장 실패: " + (detailError?.message || "알 수 없는 오류") + "\n" + rollbackMessage);
     }
-    alert("저장 성공! 검사번호: " + data.id + "\n편성: " + data.formation + "\n검수일: " + data.inspection_date + "\n오일 12건 저장 성공 (7·3·2호차, 각 1~4축)");
+    alert("저장 성공! 검사번호: " + data.id + "\n편성: " + data.formation + "\n검수일: " + data.inspection_date + "\n오일 12건 + BC 애자 28건 저장 성공");
   } catch (error) {
     const message = error && error.message ? error.message : "알 수 없는 오류가 발생했습니다.";
     alert("저장 실패: " + message);
