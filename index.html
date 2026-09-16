@@ -1076,6 +1076,12 @@ table{width:100%;border-collapse:collapse;margin-top:10px}th,td{border:1px solid
     검수 저장
   </button>
 </div>
+
+<div id="releaseTools" style="margin:12px 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+  <small>화면 버전: 2026.09.16-02</small>
+  <button type="button" id="reloadLatestButton">최신 버전 불러오기</button>
+  <span id="reloadLatestStatus" role="status" aria-live="polite"></span>
+</div>
 </main>
 <script>
 function showExtra(sel,id){document.getElementById(id).classList.toggle('hidden',sel.value!=='low')}
@@ -1290,4 +1296,31 @@ saveButton.addEventListener("click", async (event) => {
 });
   </script>
   
+
+<script id="release-refresh">
+// A new query URL avoids reusing the cached HTML without clearing site data.
+document.getElementById('reloadLatestButton').addEventListener('click', function () {
+  const status = document.getElementById('reloadLatestStatus');
+  if (typeof inspectionSaving !== 'undefined' && inspectionSaving) {
+    status.textContent = '검수 저장이 끝난 뒤 눌러 주세요.';
+    return;
+  }
+  if (!/^https?:$/.test(location.protocol)) {
+    status.textContent = '배포된 검수지 사이트에서 사용해 주세요.';
+    return;
+  }
+  if (navigator.onLine === false) {
+    status.textContent = '인터넷에 연결한 뒤 다시 눌러 주세요.';
+    return;
+  }
+  // Invoke the existing autosave handler before navigating, including Safari.
+  const field = document.querySelector('main input, main select, main textarea');
+  if (field) field.dispatchEvent(new Event('input', { bubbles: true }));
+  const url = new URL(location.href);
+  url.searchParams.set('_refresh', Date.now().toString() + '-' + Math.random().toString(36).slice(2, 8));
+  this.disabled = true;
+  status.textContent = '최신 파일을 불러오는 중...';
+  location.replace(url.href);
+});
+</script>
 </body></html>
