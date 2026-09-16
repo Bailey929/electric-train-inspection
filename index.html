@@ -1120,6 +1120,27 @@ const supabaseClient = supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
+    const loginButton = document.getElementById("loginButton");
+const loginStatus = document.getElementById("loginStatus");
+
+loginButton.addEventListener("click", async () => {
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
+
+  loginStatus.textContent = "로그인 중...";
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email: email,
+    password: password
+  });
+
+  if (error) {
+    loginStatus.textContent = "로그인 실패: " + error.message;
+    return;
+  }
+
+  loginStatus.textContent = "로그인됨 ✓";
+});
 </script>
   
 </body></html>
