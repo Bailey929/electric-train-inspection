@@ -586,6 +586,25 @@ table{width:100%;border-collapse:collapse;margin-top:10px}th,td{border:1px solid
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head><body><main>
+<div id="loginBox">
+  <h3>검수지 로그인</h3>
+
+  <input
+    type="email"
+    id="loginEmail"
+    placeholder="이메일"
+  >
+
+  <input
+    type="password"
+    id="loginPassword"
+    placeholder="비밀번호"
+  >
+
+  <button type="button" id="loginButton">로그인</button>
+
+  <div id="loginStatus">로그인이 필요합니다.</div>
+</div>
 <div class="card"><h1>전동차 검수</h1>
 <div class="top-info">
 <label for="formation">편성</label>
