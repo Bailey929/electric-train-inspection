@@ -1148,6 +1148,28 @@ loginButton.addEventListener("click", async () => {
 
   loginStatus.textContent = "로그인됨 ✓";
 });
-</script>
+const saveButton = document.getElementById("saveInspectionButton");
+
+saveButton.addEventListener("click", async () => {
+  const formation = document.getElementById("formation").value;
+  const inspectionDate = document.getElementById("inspectionDate").value;
+
+  const { data, error } = await supabaseClient
+    .from("inspections")
+    .insert({
+      formation: formation,
+      inspection_date: inspectionDate
+    })
+    .select()
+    .single();
+
+  if (error) {
+    alert("저장 실패: " + error.message);
+    return;
+  }
+
+  alert("저장 성공! 검사번호: " + data.id);
+});
+  </script>
   
 </body></html>
