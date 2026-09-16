@@ -586,21 +586,22 @@ table{width:100%;border-collapse:collapse;margin-top:10px}th,td{border:1px solid
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head><body><main>
-<div id="loginBox">
+<div id="loginBox" style="display:block;">
   <h3>검수지 로그인</h3>
 
   <input
     type="text"
     id="loginEmail"
     placeholder="이메일"
+    style="display:block !important; width:100%; margin-bottom:8px;"
   >
 
   <input
-  type="text"
-  id="loginEmail"
-  placeholder="이메일"
-  style="display:block !important; visibility:visible !important; opacity:1 !important;"
->
+    type="password"
+    id="loginPassword"
+    placeholder="비밀번호"
+    style="display:block !important; width:100%; margin-bottom:8px;"
+  >
 
   <button type="button" id="loginButton">로그인</button>
 
