@@ -1092,4 +1092,15 @@ function showExtra(sel,id){document.getElementById(id).classList.toggle('hidden'
   inputs.forEach(el=>el.addEventListener('change',notice));
 })();
 </script>
+
+  <script>
+const SUPABASE_URL = "https://ubtpeggykgbxlbxpruos.supabase.co/rest/v1/";
+const SUPABASE_KEY = "sb_publishable_jxZkhRwRCLppdp75n3Xubw_InflS17N";
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+</script>
+  
 </body></html>
